@@ -18,9 +18,9 @@ If the current mode or another instruction prohibits writes while planning, incl
 ## Create a handoff
 
 1. Resolve the project root from the user's explicit project location, otherwise the current repository root, otherwise the current working directory.
-2. Use the machine's local time. Build `plans/YYYY-MM-DD-HHMM-<title-slug>.md`, where the slug is a short lowercase hyphenated form of the plan title.
+2. Use the machine's local time. Build `docs/plans/YYYY-MM-DD-HHMM-<title-slug>.md`, where the slug is a short lowercase hyphenated form of the plan title.
 3. Never overwrite a collision. If that path exists, choose the first available numeric suffix before `.md`, starting with `-2`.
-4. Create `plans/` if needed. Do not add ignore rules; handoffs should remain visible and eligible for version control.
+4. Create `docs/plans/`, including any missing parent directories, if needed. Do not add ignore rules; handoffs should remain visible and eligible for version control.
 5. Omit `<proposed_plan>` and `</proposed_plan>` wrapper lines while preserving their Markdown content.
 
 Use this structure, adapting list detail to the plan while retaining every section:
@@ -66,6 +66,8 @@ Use this structure, adapting list detail to the plan while retaining every secti
 Use exactly one overall status: `Ready`, `In progress`, `Blocked`, or `Completed`. Write `None` explicitly when a required section or field has no entries. A revised handoff must set `Supersedes` to a clear relative path or Markdown link to its predecessor, retain still-relevant checked milestones, and copy unresolved work that remains applicable.
 
 ## Resolve the active handoff
+
+The `docs/plans/` default applies to new handoffs. Keep existing handoffs in place and resume them at their original paths.
 
 Use an explicitly supplied plan path when present. Otherwise use current conversation context only when it identifies one handoff unambiguously. Before editing, verify the resolved file exists and is inside the intended project.
 
