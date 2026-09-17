@@ -1,0 +1,3 @@
+interface:
+  display_name: "Session Handover"
+  short_description: "Document session progress and next steps for handover"
