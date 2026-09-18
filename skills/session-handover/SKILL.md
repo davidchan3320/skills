@@ -1,6 +1,6 @@
 ---
 name: session-handover
-description: Create or update a handover document capturing the current session's objective, completed work, verified state, unresolved issues, and next steps so another person or agent can continue. Use when asked to document session work for handover, preserve context before switching sessions, or prepare continuation notes. Also use proactively when a usage limit is reported or verified remaining usage is 5% or less during unfinished work.
+description: Check account usage at the start of sustained work and at progress checkpoints; save a session handover when the five-hour (300-minute) or weekly allowance has 5% or less remaining (95% or more used), or a usage warning is reported. Also use for explicit session handover and continuation notes.
 ---
 
 # Session Handover
@@ -9,9 +9,17 @@ Write a self-contained document that lets the next person or agent resume withou
 
 ## Usage-limit handover
 
-During unfinished work, create or refresh the handover when an actual usage-limit warning or error is reported, or a reliable usage reading shows 5% or less remaining in an applicable usage window. A user's report that the limit has been reached also triggers a handover; attribute it to the user if it cannot be verified.
+Load this skill and check usage at the start of sustained work, even when no warning has appeared. Recheck at meaningful progress checkpoints and before starting another substantial operation. This initial check is needed because the threshold cannot select an unloaded skill when usage is not exposed in the conversation. A check above the threshold does not require creating a handover.
 
-When usage tools are available, check at natural checkpoints during sustained work and after a usage warning. In Codex, use `get_usage_limits` when available. Prefer `rateLimitsByLimitId` over the legacy view and use the bucket applicable to the current model; for its five-hour and weekly windows, compute remaining percentage as `max(0, min(100, 100 - usedPercent))`. Either window at 5% or below qualifies. Missing values mean unknown, not zero. Do not confuse token context capacity with account usage or infer a percentage from task length.
+During unfinished work, create or refresh the handover when an actual usage-limit warning or error is reported, or a reliable usage reading shows 5% or less remaining in an applicable usage window. A user's report of 5% or less remaining or a reached limit also triggers a handover; attribute it to the user if it cannot be verified. Do not wait for an exhausted-limit error.
+
+Read usage in this order:
+
+1. Use `get_usage_limits` if exposed, or an available client integration for Codex's `account/rateLimits/read`. Prefer `rateLimitsByLimitId` over the legacy view and use the bucket applicable to the current model.
+2. If no live usage tool is available, run `python3 <skill-directory>/scripts/check_usage.py`, resolving `<skill-directory>` from this SKILL.md's path. It reads only the current thread's rollout under the active `CODEX_HOME` and outputs usage metadata, without printing conversation content or reading credentials. It uses `CODEX_THREAD_ID` (or `CODEX_SESSION_ID`); never substitute another account's or thread's log.
+3. If usage is unknown, say once that automatic threshold detection is unavailable and continue the authorized task. Honor any explicit user-reported low allowance. Do not invent a reading or claim monitoring is active.
+
+Identify windows by duration: 300 minutes is five hours, 10080 is weekly. Compute remaining percentage as `max(0, min(100, 100 - usedPercent))`; local logs use `used_percent`. Either applicable window at 5% or below qualifies, including exactly 5%. For example, 95% used triggers; 5% used means 95% remaining and does not trigger. Missing values mean unknown, not zero. Do not confuse token context capacity, elapsed wall time, or time until reset with account usage. The fallback returns separate buckets; do not select an unrelated model's bucket. Stale readings (over five minutes old), readings past their reset, or ambiguous bucket applicability cannot establish current remaining usage; prefer a fresh live reading when available.
 
 Once triggered, prioritize saving a concise handover before starting another substantial operation. Record the trigger, when it was observed, the affected usage window, and any reported reset time with its timezone. Capture in-progress operations and the immediate next action. Reuse the same document and update it after meaningful progress rather than creating repeated snapshots of unchanged state. Saving a handover does not itself pause or cancel the user's task.
 

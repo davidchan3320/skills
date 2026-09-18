@@ -7,6 +7,7 @@ A collection of reusable agent skills for common development workflows. Each ski
 | Skill | Purpose | Documentation |
 | --- | --- | --- |
 | Plan Handoff | Save finalized plans as Markdown and track implementation milestones, blockers, and verification through completion. | [SKILL.md](skills/plan-handoff/SKILL.md) |
+| Session Handover | Check account usage and save continuation notes at 5% or less remaining in the five-hour or weekly allowance, or on request. | [SKILL.md](skills/session-handover/SKILL.md) |
 
 ## Quick start
 
