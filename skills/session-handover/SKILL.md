@@ -21,7 +21,7 @@ Read usage in this order:
 
 Identify windows by duration: 300 minutes is five hours, 10080 is weekly. Compute remaining percentage as `max(0, min(100, 100 - usedPercent))`; local logs use `used_percent`. Either applicable window at 5% or below qualifies, including exactly 5%. For example, 95% used triggers; 5% used means 95% remaining and does not trigger. Missing values mean unknown, not zero. Do not confuse token context capacity, elapsed wall time, or time until reset with account usage. The fallback returns separate buckets; do not select an unrelated model's bucket. Stale readings (over five minutes old), readings past their reset, or ambiguous bucket applicability cannot establish current remaining usage; prefer a fresh live reading when available.
 
-Once triggered, prioritize saving a concise handover before starting another substantial operation. Record the trigger, when it was observed, the affected usage window, and any reported reset time with its timezone. Capture in-progress operations and the immediate next action. Reuse the same document and update it after meaningful progress rather than creating repeated snapshots of unchanged state. Saving a handover does not itself pause or cancel the user's task.
+Once triggered, prioritize saving a concise handover before starting another substantial operation. Record the trigger, when it was observed, the affected usage window, and any reported reset time with its timezone. Capture in-progress operations and the immediate next action. Update this session's handover after meaningful progress rather than creating repeated snapshots of unchanged state. Saving a handover does not itself pause or cancel the user's task.
 
 A skill is not a background monitor or a guaranteed shutdown hook. If execution has already been blocked, a file may no longer be writable; never claim a handover was saved without a successful write. Do not consume reset credits or schedule automatic resumption solely because this trigger fired.
 
@@ -35,7 +35,11 @@ If earlier history is unavailable, state that limitation and identify what needs
 
 ## Write the handover
 
-Honor the user's requested destination and existing project conventions. Otherwise save `session-handover.md` in the workspace's designated deliverables directory, or the workspace root if none exists. Update an existing document only when it covers the same work; use a task-specific filename when needed to avoid overwriting a different handover.
+Honor a destination or filename explicitly requested by the user. Otherwise save the handover in the workspace's designated deliverables directory, or the workspace root if none exists, as `YYYY-MM-DD-HHMM-topic-handover.md`. Use the local date and time when this session's handover is first written, and derive a short lowercase hyphenated topic from the task. If that name already belongs to another session, add the first available numeric suffix before `.md`, starting with `-2`.
+
+Keep one file for the current session: subsequent updates to its handover use that same path, even when its updated timestamp changes. A later session gets a new file, even when it continues the same task. Do not reuse an earlier session's handover merely because its topic matches. If the user explicitly requests updating a particular existing file, honor that request.
+
+If you encounter an older generic handover for the current work, rename it using the timestamp recorded in that handover and a topic derived from its task, applying the same collision rule. Update direct references to its old path that you find in the relevant workspace. If that handover belongs to an earlier session, create a separate file for the current session. Leave unrelated handovers alone; do not bulk-migrate other workspaces.
 
 Choose sections proportional to the work. Include the following when relevant:
 
