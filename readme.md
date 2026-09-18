@@ -11,7 +11,7 @@ A collection of reusable agent skills for common development workflows. Each ski
 
 ## Installation
 
-These instructions install the skills for your user account in Codex's `~/.agents/skills` directory. You need Git to clone the repository. Session Handover's local usage-log fallback also requires Python 3.
+These instructions install the skills for your user account in Codex's `~/.agents/skills` directory. You need Git and Bash (available on macOS, Linux, and WSL). Session Handover's local usage-log fallback also requires Python 3.
 
 Clone the repository and enter it:
 
@@ -23,13 +23,18 @@ cd skills
 Install both skills from the repository root:
 
 ```sh
-for skill in plan-handoff session-handover; do
-  mkdir -p "$HOME/.agents/skills/$skill"
-  cp -R "skills/$skill/." "$HOME/.agents/skills/$skill/"
-done
+./install.sh
 ```
 
-To install only one skill, keep only its name in the `for skill in ...` line. Copy the entire skill directory: Session Handover needs its `scripts/` directory as well as `SKILL.md`.
+Install one skill, list available skills, or choose a different destination:
+
+```sh
+./install.sh session-handover
+./install.sh --list
+./install.sh --dest ./my-project/.agents/skills plan-handoff
+```
+
+The installer copies each complete skill directory, including its scripts and metadata. It works from any working directory when called by its path. Relative destinations are resolved from your current working directory. Run `./install.sh --help` for options.
 
 Start a new Codex session after installation. If the skills do not appear, restart Codex. In Codex CLI or the IDE extension, use `/skills` or type `$` to find them. See the [official skill documentation](https://learn.chatgpt.com/docs/build-skills) for discovery and installation locations.
 
@@ -55,17 +60,14 @@ See each skill's documentation in the table above for its full workflow.
 
 ## Updating
 
-Installed skills are copies, so pulling this repository does not update them automatically. From your local clone, pull the latest version and copy the skills again:
+Installed skills are copies, so pulling this repository does not update them automatically. From your local clone, pull the latest version and rerun the installer:
 
 ```sh
 git pull --ff-only
-for skill in plan-handoff session-handover; do
-  mkdir -p "$HOME/.agents/skills/$skill"
-  cp -R "skills/$skill/." "$HOME/.agents/skills/$skill/"
-done
+./install.sh
 ```
 
-Keep only the skills you want to update in the loop. This overwrites matching installed files; preserve any local customizations first. Start a new Codex session to use the updated instructions.
+Pass skill names to update only those skills, and repeat `--dest` if you used a custom location. Matching installed files are overwritten and extra destination files are preserved; preserve any local customizations first. Start a new Codex session to use the updated instructions.
 
 ## License
 
