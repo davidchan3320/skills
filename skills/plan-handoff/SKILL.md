@@ -1,11 +1,11 @@
 ---
 name: plan-handoff
-description: Persist finalized plans as Markdown handoffs and keep them current while implementation proceeds. Use automatically when a plan is finalized or when implementation starts or continues from a saved plan; do not use for drafts or tentative planning.
+description: Persist complete finalized plans as Markdown handoffs, record which model produced each plan, and keep the handoffs current while implementation proceeds. Use automatically when a plan is finalized or when implementation starts or continues from a saved plan; do not use for drafts or tentative planning.
 ---
 
 # Plan Handoff
 
-Maintain one durable plan file from finalization through verified completion. Record progress at meaningful milestones, not after every command.
+Maintain one durable, self-contained plan file from finalization through verified completion. The handoff must identify the planning model and preserve the full finalized plan, not a summary or pointer back to the conversation. Record progress at meaningful milestones, not after every command.
 
 ## Choose the operating path
 
@@ -18,10 +18,13 @@ If the current mode or another instruction prohibits writes while planning, incl
 ## Create a handoff
 
 1. Resolve the project root from the user's explicit project location, otherwise the current repository root, otherwise the current working directory.
-2. Use the machine's local time. Build `plans/YYYY-MM-DD-HHMM-<title-slug>.md`, where the slug is a short lowercase hyphenated form of the plan title.
+2. Use the machine's local time. Build `docs/plans/YYYY-MM-DD-HHMM-<title-slug>.md`, where the slug is a short lowercase hyphenated form of the plan title.
 3. Never overwrite a collision. If that path exists, choose the first available numeric suffix before `.md`, starting with `-2`.
-4. Create `plans/` if needed. Do not add ignore rules; handoffs should remain visible and eligible for version control.
-5. Omit `<proposed_plan>` and `</proposed_plan>` wrapper lines while preserving their Markdown content.
+4. Create `docs/plans/`, including any missing parent directories, if needed. Do not add ignore rules; handoffs should remain visible and eligible for version control.
+5. Omit `<proposed_plan>` and `</proposed_plan>` wrapper lines while preserving all Markdown content between them.
+6. Record the exact model identifier that produced the finalized plan. Include its reasoning effort when that information is available, for example `gpt-6-sol (reasoning: high)`. If the exact identifier is unavailable, write `Unknown`; never infer it from writing style, capability, or context. For a revised handoff, record the model that produced the revision while leaving the predecessor unchanged.
+
+Populate the plan-body sections with the complete finalized plan. Preserve every material heading, step, decision, file path, interface, code block, test, edge case, assumption, and constraint. Retain additional source-plan headings in their original order when the required structure does not already represent them. Do not shorten the plan, replace details with a synopsis, use ellipses as saved content, or refer the reader to chat history or another transient source. Wording and organization may be normalized to fit the handoff structure only when no information is lost.
 
 Use this structure, adapting list detail to the plan while retaining every section:
 
@@ -31,6 +34,7 @@ Use this structure, adapting list detail to the plan while retaining every secti
 - **Status:** Ready
 - **Created:** YYYY-MM-DD HH:MM ±HH:MM
 - **Last updated:** YYYY-MM-DD HH:MM ±HH:MM
+- **Planning model:** <exact model identifier> (reasoning: <effort>)
 - **Supersedes:** None
 - **Current blocker:** None
 - **Next action:** <specific next action>
@@ -54,7 +58,7 @@ Use this structure, adapting list detail to the plan while retaining every secti
 - [ ] ...
 
 ## Progress Log
-- YYYY-MM-DD HH:MM ±HH:MM — Finalized plan saved with status `Ready`.
+- YYYY-MM-DD HH:MM ±HH:MM — Complete finalized plan saved with status `Ready`; planning model: `<exact model identifier>`.
 
 ## Verification Results
 - Not run yet.
@@ -63,9 +67,11 @@ Use this structure, adapting list detail to the plan while retaining every secti
 - None currently.
 ```
 
-Use exactly one overall status: `Ready`, `In progress`, `Blocked`, or `Completed`. Write `None` explicitly when a required section or field has no entries. A revised handoff must set `Supersedes` to a clear relative path or Markdown link to its predecessor, retain still-relevant checked milestones, and copy unresolved work that remains applicable.
+Use exactly one overall status: `Ready`, `In progress`, `Blocked`, or `Completed`. Write `None` explicitly when a required section or field has no entries. Keep `Planning model` unchanged after creation; it attributes the model that produced that handoff's finalized plan, not models that later implement it. A revised handoff must set `Supersedes` to a clear relative path or Markdown link to its predecessor, retain still-relevant checked milestones, copy unresolved work that remains applicable, and include the complete revised plan rather than only its delta from the predecessor.
 
 ## Resolve the active handoff
+
+The `docs/plans/` default applies to new handoffs. Keep existing handoffs in place and resume them at their original paths.
 
 Use an explicitly supplied plan path when present. Otherwise use current conversation context only when it identifies one handoff unambiguously. Before editing, verify the resolved file exists and is inside the intended project.
 
